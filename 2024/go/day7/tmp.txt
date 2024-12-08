@@ -1,0 +1,74 @@
+/*
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	file, _ := os.Open("input.txt")
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var line []string
+	for scanner.Scan() {
+		line2 := (scanner.Text())
+		line = append(line, line2)
+	}
+	sum := 0
+	for _, result := range line {
+		target, inputs := parseEquation(result)
+
+		if solveEquation(1, inputs[0], target, inputs) {
+
+			sum += target
+
+		}
+	}
+	//Solve(line)
+	answer := strconv.Itoa(sum)
+	fmt.Println(answer)
+}
+
+func parseEquation(eq string) (int, []int) {
+	var equation []int
+	result := strings.Split(eq, ": ")
+	target, _ := strconv.Atoi(result[0])
+
+	operands := strings.Split(result[1], " ")
+	for _, numberString := range operands {
+		number, _ := strconv.Atoi(numberString)
+
+		equation = append(equation, number)
+	}
+
+	return target, equation
+}
+
+func solveEquation(currIdx, solution, target int, inputs []int) bool {
+
+	if target == solution {
+		return true
+	}
+	if currIdx >= len(inputs) {
+		return false
+	}
+
+	curr := inputs[currIdx]
+
+	if solveEquation(currIdx+1, solution+curr, target, inputs) {
+		return true
+	}
+	if solveEquation(currIdx+1, solution*curr, target, inputs) {
+		return true
+	}
+
+	return false
+
+}
+*/
