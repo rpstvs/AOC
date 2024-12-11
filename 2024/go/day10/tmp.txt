@@ -1,0 +1,94 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+type Point struct {
+	x, y int
+}
+
+var dirs = [4]Point{{x: 0, y: -1}, {x: 1, y: 0}, {x: 0, y: 1}, {x: -1, y: 0}}
+
+func main() {
+	grid := getinput()
+	seen := make(map[Point][]Point, 1000)
+	traiHeads := findTrailHeads(grid)
+	fmt.Println(traiHeads)
+	var score int
+	for _, head := range traiHeads {
+
+		if walk(grid, head, dirs[0], seen) {
+			score++
+		}
+
+	}
+	var i int[] 
+	
+	fmt.Println(score)
+}
+
+func getinput() [][]int {
+	file, _ := os.Open("example.txt")
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	var grid [][]int
+
+	for scanner.Scan() {
+		var line = scanner.Text()
+		var row []int
+
+		for _, char := range line {
+			var num = int(char - '0')
+			row = append(row, num)
+		}
+		grid = append(grid, row)
+
+	}
+	return grid
+}
+
+func walk(labmap [][]int, curr Point, dir Point, seen map[Point][]Point) bool {
+
+	if curr.x+dir.x < 0 || curr.y+dir.y < 0 || curr.x+dir.x >= len(labmap) || curr.y+dir.y >= len(labmap[0]) {
+		return false
+	}
+	if (labmap[curr.y+dir.y][curr.x+dir.x] - labmap[curr.y][curr.x]) != 1 {
+		return false
+	}
+	if labmap[curr.y][curr.x] == 9 {
+		fmt.Println("Cheguei ao fim")
+		return true
+	}
+	newPos := Point{x: curr.x + dir.x, y: curr.y + dir.y}
+	_, ok := seen[newPos]
+	if ok {
+		return false
+	}
+
+	seen[curr] = append(seen[curr], curr)
+	fmt.Println(seen)
+	for _, dir := range dirs {
+		if walk(labmap, newPos, dir, seen) {
+			return true
+		}
+	}
+
+	return false
+}
+
+func findTrailHeads(grid [][]int) []Point {
+	var trailHeads []Point
+	for y := 0; y < len(grid); y++ {
+		for x := 0; x < len(grid[0]); x++ {
+			if grid[y][x] == 0 {
+				trailHeads = append(trailHeads, Point{x: x, y: y})
+			}
+		}
+	}
+	return trailHeads
+}
