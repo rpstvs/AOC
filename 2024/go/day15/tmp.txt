@@ -1,0 +1,95 @@
+func grow(m map[Point]byte, robot Point) (map[Point]byte, Point) {
+	newM := make(map[Point]byte, 2*len(m))
+
+	for i := 0; i < 50; i++ {
+		for j := 0; j < 50; j++ {
+			p := Point{i, j}
+			switch m[p] {
+			case '#':
+				newM[Point{p.x, 2 * p.y}] = '#'
+				newM[Point{p.x, 2*p.y + 1}] = '#'
+			case 'O':
+				newM[Point{p.x, 2 * p.y}] = '['
+				newM[Point{p.x, 2*p.y + 1}] = ']'
+			case '.':
+				newM[Point{p.x, 2 * p.y}] = '.'
+				newM[Point{p.x, 2*p.y + 1}] = '.'
+			case '@':
+				newM[Point{p.x, 2 * p.y}] = '@'
+				newM[Point{p.x, 2*p.y + 1}] = '.'
+			}
+		}
+	}
+	Width *= 2
+	return newM, Point{robot.x, 2 * robot.y}
+}
+
+func apply2(m map[Point]byte, move byte, robot Point) Point {
+	delta := getDelta(move)
+
+	nextEmpty, err := findeNextEmpty(m, robot, delta)
+
+	if err != nil {
+		return robot
+	}
+
+	if move == '<' || move == '>' {
+		for curr := nextEmpty; curr != robot; {
+			closest := Point{curr.x, curr.y - delta.y}
+			m[curr], m[closest] = m[closest], m[curr]
+			curr = closest
+		}
+		return Point{robot.x, robot.y + delta.y}
+	}
+
+	if move == '^' || move == 'v' {
+		affected, maxLevel, err := affectedVertically(m, robot, delta.x)
+		if err != nil {
+			return robot
+		}
+
+		for x := maxLevel; x != robot.x; x -= delta.x {
+			for col := range affected[x] {
+				m[Point{x + delta.x, col}], m[Point{x, col}] = m[Point{x, col}], m[Point{x + delta.x, col}]
+			}
+		}
+		return Point{robot.x + delta.x, robot.y}
+	}
+	panic("unreachable")
+}
+
+func affectedVertically(m map[Point]byte, robot Point, deltaX int) (map[int]map[int]struct{}, int, error) {
+	affected := map[int]map[int]struct{}{
+		robot.x: {robot.y: {}},
+	}
+
+	for currX := robot.x; ; currX += deltaX {
+		newCols, err := newColumns(m, currX+deltaX, affected[currX])
+		if err != nil {
+			return nil, 0, err
+		}
+
+		if len(newCols) == 0 {
+			return affected, currX, nil
+		}
+
+		affected[currX+deltaX] = newCols
+	}
+}
+
+func newColumns(m map[Point]byte, nextX int, columns map[int]struct{}) (map[int]struct{}, error) {
+	newCols := map[int]struct{}{}
+	for col := range columns {
+		switch m[Point{nextX, col}] {
+		case '#':
+			return nil, NotFound
+		case '[':
+			newCols[col] = struct{}{}
+			newCols[col+1] = struct{}{}
+		case ']':
+			newCols[col] = struct{}{}
+			newCols[col-1] = struct{}{}
+		}
+	}
+	return newCols, nil
+}
