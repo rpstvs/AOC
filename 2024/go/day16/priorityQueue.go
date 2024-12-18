@@ -7,23 +7,23 @@ type pqNode struct {
 
 type priorityQueue []pqNode
 
-func (n priorityQueue) len() int {
+func (n priorityQueue) Len() int {
 	return len(n)
 }
 
-func (n priorityQueue) less(i, j int) bool {
+func (n priorityQueue) Less(i, j int) bool {
 	return n[i].Score < n[j].Score
 }
 
-func (n priorityQueue) swap(i, j int) {
+func (n priorityQueue) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
-func (n *priorityQueue) push(x interface{}) {
+func (n *priorityQueue) Push(x interface{}) {
 	*n = append(*n, x.(pqNode))
 }
 
-func (n *priorityQueue) pop() interface{} {
+func (n *priorityQueue) Pop() interface{} {
 	old := *n
 	l := len(old)
 	x := old[l-1]
