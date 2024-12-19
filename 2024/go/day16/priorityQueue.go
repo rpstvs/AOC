@@ -19,11 +19,11 @@ func (n priorityQueue) Swap(i, j int) {
 	n[i], n[j] = n[j], n[i]
 }
 
-func (n *priorityQueue) Push(x interface{}) {
+func (n *priorityQueue) Push(x any) {
 	*n = append(*n, x.(pqNode))
 }
 
-func (n *priorityQueue) Pop() interface{} {
+func (n *priorityQueue) Pop() any {
 	old := *n
 	l := len(old)
 	x := old[l-1]
