@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -13,7 +14,9 @@ func main() {
 	a, b, c, program := parseinput()
 
 	output := solve(a, b, c, program)
+	sol2 := solve2(b, c, program)
 	fmt.Println(strings.Join(toStr(output), ","))
+	fmt.Println(sol2)
 }
 
 func parseinput() (int, int, int, []int) {
@@ -108,4 +111,17 @@ func toStr(x []int) []string {
 		s[i] = strconv.Itoa(x[i])
 	}
 	return s
+}
+
+func solve2(b, c int, program []int) int {
+	a := 0
+
+	for i := len(program) - 1; i >= 0; i-- {
+		a <<= 3
+
+		for !slices.Equal(solve(a, b, c, program), program[i:]) {
+			a++
+		}
+	}
+	return a
 }
