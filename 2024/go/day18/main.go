@@ -22,11 +22,27 @@ var (
 
 func main() {
 	mem := parseinput()
+	solvept2()
 	corrupted := map[Point]struct{}{}
 	for _, p := range mem[:1024] {
 		corrupted[p] = struct{}{}
 	}
 	fmt.Println(len(BFS(corrupted)))
+}
+
+func solvept2() {
+	mem := parseinput()
+
+	corrupted := map[Point]struct{}{}
+	for _, p := range mem {
+		corrupted[p] = struct{}{}
+
+		if path := BFS(corrupted); path == nil {
+			fmt.Println(p.x, p.y)
+			return
+
+		}
+	}
 }
 
 func parseinput() []Point {
